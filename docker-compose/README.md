@@ -147,7 +147,7 @@ Keterangan:
   docker compose up -d  # Untuk dijalankan di background
   ```
 2. Cek di `localhost:8000`:
-  ![gambar browser](images/Screenshot 2026-03-27 161538.png)
+  ![gambar browser](images/Screenshot1.png)
 3. Matikan service bila selesai digunakan (variabel angka akan tersimpan di volume!)
   ```sh
   # lakukan di folder yang sama dengan file docker-compose.yml
