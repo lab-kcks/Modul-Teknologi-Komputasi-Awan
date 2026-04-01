@@ -155,11 +155,6 @@ Keterangan:
   ```
 
 ## Soal Latihan
-1. Oke, jadi kamu mau formatnya **hierarchical (soal utama + sub-step menjorok ke dalam)**. Ini versi yang sudah rapi dan konsisten:
-
----
-
-## Soal Latihan
 
 1. Buatlah aplikasi sederhana menggunakan **Docker Compose** yang terdiri dari 2 service: **web (Flask)** dan **redis**.
 
