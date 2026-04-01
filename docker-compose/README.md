@@ -155,6 +155,87 @@ Keterangan:
   ```
 
 ## Soal Latihan
+1. Oke, jadi kamu mau formatnya **hierarchical (soal utama + sub-step menjorok ke dalam)**. Ini versi yang sudah rapi dan konsisten:
+
+---
+
+## Soal Latihan
+
+1. Buatlah aplikasi sederhana menggunakan **Docker Compose** yang terdiri dari 2 service: **web (Flask)** dan **redis**.
+
+   **Ketentuan:**
+
+   1. Buat struktur direktori berikut:
+
+      ```id="3vv2vs"
+      compose-project/
+      ├── docker-compose.yml
+      └── app/
+          ├── app.py
+          ├── requirements.txt
+          └── Dockerfile
+      ```
+
+   2. Buat aplikasi Flask (`app.py`) yang memiliki 2 endpoint:
+
+      * `/` → menampilkan pesan `"Welcome"`
+      * `/count` → menampilkan jumlah akses ke endpoint tersebut
+
+      Gunakan Redis untuk:
+
+      * menyimpan jumlah akses endpoint `/count`
+      * setiap kali `/count` diakses, nilai bertambah
+
+   3. Buat `requirements.txt`:
+
+      ```id="3oav4m"
+      flask
+      redis
+      ```
+
+   4. Buat `Dockerfile` untuk service web:
+
+      * menggunakan image `python:3.7-alpine`
+      * menjalankan aplikasi Flask
+      * expose port `5000`
+
+   5. Buat `docker-compose.yml`:
+
+      * Service `web`:
+
+        * build dari `./app`
+        * port mapping `8000:5000`
+        * menggunakan volume untuk sinkronisasi kode
+      * Service `redis`:
+
+        * menggunakan image `redis:alpine`
+        * menggunakan volume untuk menyimpan data
+
+   6. Jalankan aplikasi:
+
+      ```id="s55vri"
+      docker compose up -d
+      ```
+
+   7. Lakukan pengujian:
+
+      * akses `http://localhost:8000/` → tampil `"Welcome"`
+      * akses `http://localhost:8000/count` beberapa kali → angka bertambah
+
+   8. Uji persistensi:
+
+      Jalankan:
+
+      ```id="jtz5v7"
+      docker compose down
+      docker compose up -d
+      ```
+
+      Pastikan nilai counter **tidak reset**.
+
+   9. Tampilkan log dari service `redis` dan `web`.
+
+   10. Hentikan seluruh service.
 
 ## Referensi
 - [Definisi Docker Compose](https://docs.docker.com/compose/)
