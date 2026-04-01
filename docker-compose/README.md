@@ -231,6 +231,14 @@ Keterangan:
    9. Tampilkan log dari service `redis` dan `web`.
 
    10. Hentikan seluruh service.
+  
+2. Buatlah sebuah docker-compose file yang berisi configurasi untuk aplikasi berbasis vue.js di <a href="https://drive.google.com/file/d/1rtORr74Xj2kl-iIdYiJr9dPE0B-vAFl-/view?usp=sharing">link</a> ini. Gunakan port 8080 dan namakan container tersebut dengan `lat-mod2`
+
+```bash
+*root_directory/*
+*┣* lat-soal/ (berisi source code Vue.js & *Dockerfile* dari link)
+*┗* docker-compose.yaml (file yang harus Kalian buat)
+```
 
 ## Referensi
 - [Definisi Docker Compose](https://docs.docker.com/compose/)
