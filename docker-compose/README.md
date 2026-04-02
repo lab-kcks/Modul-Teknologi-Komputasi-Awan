@@ -11,7 +11,7 @@
 
 
 ## Definisi
-Docker Compose adalah tool untuk mendefinisikan dan menjalankan aplikasi multi-kontainer. Compose menyederhanakan kontrol aplikasi sehingga memudahkan pengelolaan services, network, dan volume dalam satu file YAML. 
+Docker Compose adalah tool untuk mendefinisikan dan menjalankan aplikasi multi-kontainer. Compose menyederhanakan kontrol aplikasi sehingga memudahkan pengelolaan services, networks, dan volumes dalam satu file YAML. 
 
 Dalam Docker Compose:
 1. Service digunakan untuk mendefinisikan container dalam aplikasi. Setiap service merepresentasikan satu komponen, seperti web server, backend, atau database, dengan konfigurasi seperti image, build, environment, dan ports.
