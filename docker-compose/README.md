@@ -11,13 +11,56 @@
 
 
 ## Definisi
-Docker Compose adalah tool untuk mendefinisikan dan menjalankan aplikasi multi-kontainer. Compose menyederhanakan kontrol aplikasi sehingga memudahkan pengelolaan services, networkd, dan volume dalam satu file YAML. 
+Docker Compose adalah tool untuk mendefinisikan dan menjalankan aplikasi multi-kontainer. Compose menyederhanakan kontrol aplikasi sehingga memudahkan pengelolaan services, network, dan volume dalam satu file YAML. 
+
+Dalam Docker Compose:
+1. Service digunakan untuk mendefinisikan container dalam aplikasi. Setiap service merepresentasikan satu komponen, seperti web server, backend, atau database, dengan konfigurasi seperti image, build, environment, dan ports.
+   Contoh:
+   ```
+   services:
+      web:
+        image: nginx:latest
+        ports:
+          - "8080:80"
+   ```
+2. Networks menentukan bagaimana service saling terhubung. Secara default, Docker Compose membuat satu network agar semua service dapat saling berkomunikasi. Namun, kita juga bisa membuat network sendiri untuk mengatur komunikasi dan isolasi antar service.
+   Contoh:
+   ```
+   networks:
+      my_network:
+        driver: bridge
+   ```
+   Penggunaan pada service:
+   ```
+   services:
+      web:
+        image: nginx:latest
+        networks:
+          - my_network
+   ```
+   Service dalam network yang sama dapat saling berkomunikasi menggunakan nama service sebagai hostname.
+3. Volumes digunakan untuk menyimpan data secara persisten agar tidak hilang saat container dihentikan atau dihapus.
+   Contoh:
+    ```
+    volumes:
+      my_volume:
+    ```
+   Penggunaan pada service:
+   ```
+   services:
+      db:
+        image: postgres
+        volumes:
+          - my_volume:/var/lib/postgresql/data
+   ```
 
 Compose berfungsi di semua lingkungan - production, staging, development, testing, serta alur kerja CI. Compose juga memiliki perintah untuk mengelola seluruh siklus hidup aplikasi yaitu:
 - Start, stop, dan rebuild service.
 - Melihat status layanan yang sedang berjalan.
 - Stream log output dari layanan yang sedang berjalan.
 - Menjalankan perintah satu kali pada sebuah layanan.
+
+Ketiga komponen ini bekerja bersama untuk membentuk aplikasi multi-container yang terstruktur, terhubung, dan stabil.
 
 ## Mengapa menggunakan Docker Compose?
 Penggunaan Docker Compose menawarkan beberapa manfaat yang menyederhanakan development, deployment, dan manajemen aplikasi berbasis kontainer:
