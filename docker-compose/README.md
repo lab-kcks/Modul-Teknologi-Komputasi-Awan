@@ -43,6 +43,32 @@ docker compose up -d
 ./run_tests
 docker compose down
 ```
+## Perintah Docker Compose
+Cara penggunaan
+```
+docker compose COMMAND
+```
+| Command                  |  Keterangan                                                                 |
+|---------------------------|-------------------------------------------------------------------------------------|
+| up                        | Menjalankan service yang didefinisikan di docker-compose.yml                       |
+| up -d                     | Menjalankan service dalam mode background (detached)                               |
+| down                      | Menghentikan dan menghapus container, network, dan volume (opsional)               |
+| start                     | Menjalankan container yang sudah pernah dibuat                                      |
+| stop                      | Menghentikan container tanpa menghapusnya                                           |
+| restart                   | Restart semua service                                                               |
+| build                     | Build image dari Dockerfile                                                         |
+| pull                      | Mengambil (download) image dari registry                                            |
+| ps                        | Menampilkan daftar container yang sedang berjalan                                   |
+| logs                      | Menampilkan log dari semua service                                                  |
+| logs -f                   | Menampilkan log secara realtime (follow)                                            |
+| exec <service>            | Menjalankan perintah di dalam container yang sedang berjalan                        |
+| run <service>             | Menjalankan service sekali (one-off command)                                        |
+| config                    | Menampilkan hasil konfigurasi yang sudah di-merge/valid                             |
+| images                    | Menampilkan image yang digunakan oleh service                                       |
+| top                       | Menampilkan proses yang berjalan di dalam container                                 |
+| pause                     | Pause semua service                                                                 |
+| unpause                   | Resume service yang di-pause                                                        |
+| rm                        | Menghapus container yang sudah berhenti                                             |
 
 ## Contoh Implementasi
 Untuk memahami konsep Docker Compose, kita bisa mencoba membuat sebuah proyek infrastruktur sederhana menggunakan Flask, Redis, dan Docker Volume.
