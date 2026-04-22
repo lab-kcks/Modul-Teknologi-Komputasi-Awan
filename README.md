@@ -2,6 +2,6 @@
 
 - Modul 1 - [Docker](https://github.com/lab-kcks/Modul-Teknologi-Komputasi-Awan/tree/main/docker)
 - Modul 2 - [Docker Compose](https://github.com/lab-kcks/Modul-Teknologi-Komputasi-Awan/tree/main/docker-compose)
-- Modul 3 - Ansible
+- Modul 3 - [Ansible](https://github.com/lab-kcks/Modul-Teknologi-Komputasi-Awan/tree/main/ansible)
 - Modul 4 - Docker Virtualization
 - Modul 5 - Load balancing & Cloudsim
