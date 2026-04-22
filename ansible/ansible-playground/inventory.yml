@@ -1,0 +1,12 @@
+all:
+  children:
+    webservers:
+      hosts:
+        node1:
+          ansible_host: [IP_ADDRESS]
+          ansible_user: ubuntu
+    dbservers:
+      hosts:
+        node2:
+          ansible_host: [IP_ADDRESS]
+          ansible_user: ubuntu
