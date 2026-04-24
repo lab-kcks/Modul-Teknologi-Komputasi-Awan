@@ -711,13 +711,14 @@ ansible node1 -m uri -a "url=http://localhost:80 status_code=200"
 ---
 
 ## Soal Latihan
-Dalam sebuah skenario maintenance sistem, Anda diminta untuk melakukan deployment halaman maintenance secara otomatis ke beberapa server menggunakan Ansible. Ketentuan: - Gunakan Multipass untuk membuat dua node sebagai target host.
-1. Buat dua role Ansible, yaitu docker dan maintenance.
+Dalam sebuah skenario maintenance sistem, Anda diminta untuk melakukan deployment halaman maintenance secara otomatis ke beberapa server menggunakan Ansible. Ketentuan: 
+1. Gunakan Multipass untuk membuat dua node sebagai target host.
+2. Buat dua role Ansible, yaitu docker dan maintenance.
    - Role docker digunakan untuk menginstall Docker Engine dan memastikan Docker dapat berjalan di semua node.
    - Role maintenance menggunakan template Jinja2 untuk menghasilkan file HTML dengan variabel message dan bg_color, dengan bg_color: red dan message: "Website under maintenance" 
-2. Pada role maintenance, jalankan service nginx melalui container Docker agar halaman dapat diakses melalui browser.
-3. Buat playbook deploy.yml yang memanggil docker lalu maintenance dan override variabel bg_color menjadi "blue"
-4. Lakukan verifikasi untuk memastikan:
+3. Pada role maintenance, jalankan service nginx melalui container Docker agar halaman dapat diakses melalui browser.
+4. Buat playbook deploy.yml yang memanggil docker lalu maintenance dan override variabel bg_color menjadi "blue"
+5. Lakukan verifikasi untuk memastikan:
    - File /var/www/html/index.html berhasil dibuat di semua node
    - Container nginx berjalan di semua node
    - Halaman dapat diakses melalui browser
