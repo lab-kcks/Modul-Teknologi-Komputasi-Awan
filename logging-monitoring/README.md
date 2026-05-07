@@ -135,9 +135,9 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
             port => 5000
             codec => json
         }
-        }
+    }
 
-        output {
+    output {
         elasticsearch {
             hosts => ["http://elasticsearch:9200"]
             index => "app-logs-%{+YYYY.MM.dd}"
@@ -165,4 +165,124 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
 8. Lihat log di Kibana dengan memilih menu Discover lalu pilih data view yang telah dibuat sebelumnya
 ![ELK Stack](images/image8.png)
 
-Untuk integrasi dengan aplikasi, kita dapat menggunakan library seperti `winston` untuk Node.js. 
+Untuk integrasi dengan aplikasi, kita dapat menggunakan library seperti `winston` untuk Node.js. Disini kita perlu mengubah beberapa config pada docker compose dan juga logstash.conf karena kita akan menggunakan Filebeat untuk mengirim data log dari aplikasi ke Logstash. 
+
+Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya ke Logstash untuk diproses lebih lanjut sebelum disimpan di Elasticsearch. Kita menggunakan Filebeat karena lebih efisien dalam mengirim data log dibandingkan dengan menggunakan Logstash secara langsung untuk menerima data log dari aplikasi.
+
+1. Ubah port pada Logstash di `docker-compose.yml` menjadi 5044 untuk menerima data log dari Filebeat.
+    ```yaml
+    logstash:
+        image: docker.elastic.co/logstash/logstash:8.11.0
+        volumes:
+        - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+        ports:
+        - "5044:5044"
+        depends_on:
+        - elasticsearch
+    ```
+2. Tambahkan service Filebeat pada `docker-compose.yml` untuk mengirim data log dari aplikasi ke Logstash.
+    ```yaml
+    filebeat:
+        image: docker.elastic.co/beats/filebeat:8.11.0
+        user: root
+        command: filebeat -e --strict.perms=false
+        volumes:
+        - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+        - ./node-app/logs:/logs
+        depends_on:
+        - logstash
+    ```
+3. Ubah longstash.conf untuk menerima data log dari Filebeat melalui input beats.
+    ```conf
+    input {
+        beats {
+            port => 5044
+        }
+    }
+
+    filter {
+        json {
+            source => "message"
+        }
+    }
+
+    output {
+        elasticsearch {
+            hosts => ["http://elasticsearch:9200"]
+            index => "app-logs-%{+YYYY.MM.dd}"
+        }
+
+        stdout {
+            codec => rubydebug
+        }
+    }
+    ```
+4. Buat file `filebeat.yml` untuk mengkonfigurasi Filebeat agar dapat membaca file log dari aplikasi dan mengirimkannya ke Logstash.
+    ```yaml
+    filebeat.inputs:
+    - type: filestream
+        id: app-logs
+        enabled: true
+        paths:
+        - /logs/app.log
+
+    output.logstash:
+    hosts: ["logstash:5044"]
+    ```
+5. Jalankan perintah `docker-compose up -d` untuk memulai layanan ELK Stack beserta Filebeat.
+6. Pastikan aplikasi sudah dikonfigurasi untuk menghasilkan log ke file `app.log` di dalam folder `logs` pada aplikasi. Contoh konfigurasi logging menggunakan winston pada Node.js:
+    ```javascript
+    const winston = require('winston')
+
+    const logger = winston.createLogger({
+        format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.json()
+        ),
+        transports:[
+            new winston.transports.Console(),
+            new winston.transports.File({filename: 'logs/app.log'})
+        ]
+    })
+
+    module.exports = logger
+    ```
+    Contoh penggunaan logger di aplikasi:
+    ```javascript
+    const express = require("express");
+    const logger = require("./logger");
+
+    const app = express();
+
+    app.use(express.json());
+
+    app.post("/log", (req, res) => {
+    const { level = "info", message = "No message provided" } = req.body;
+
+    logger.log({
+        level,
+        message,
+        service: "express-app",
+        endpoint: "/log",
+        method: "POST",
+    });
+
+    res.json({
+        status: "Log berhasil ditulis",
+    });
+    });
+
+    app.listen(3000, () => {
+    logger.info({
+        message: "Server started",
+        service: "express-app",
+        port: 3000,
+    });
+
+    console.log("🚀 App running on http://localhost:3000");
+    });
+    ```
+7. Setelah aplikasi berjalan, coba kirim data log ke endpoint `/log` dengan menggunakan curl/postman/hoppscotch.
+![alt text](images/image.png)
+8. Setelah data log berhasil dikirim, kita dapat cek di Kibana dengan memilih menu Discover lalu pilih data view yang telah dibuat sebelumnya untuk melihat log yang telah dikirim dari aplikasi.
+![alt text](images/image11.png)
