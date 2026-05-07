@@ -114,7 +114,7 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
         volumes:
         - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
         ports:
-        - "5044:5044"
+        - "5000:5000" 
         depends_on:
         - elasticsearch
 
@@ -132,13 +132,8 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
     input {
         http {
             host => "0.0.0.0"
-            port => 5044
-        }
-        }
-
-        filter {
-        json {
-            source => "message"
+            port => 5000
+            codec => json
         }
         }
 
@@ -156,7 +151,7 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
 ![ELK Stack](images/image1.png)
 ![ELK Stack](images/image2.png)
 5. Testing dengan mengirimkan data log ke logstash menggunakan curl/postman/hoppscotch.
-![ELK Stack](images/image3.png)
+![ELK STACK](images/image3.png)
 6. Setelah data log berhasil dikirim, kita dapat cek secara manual di elasticsearch dengan get request ke `http://localhost:9200/app-logs-*/_search?pretty` 
 ![ELK Stack](images/image4.png)
 7. Terakhir, kita dapat membuat dashboard di Kibana untuk memvisualisasikan data log yang telah dikirim dengan cara :
