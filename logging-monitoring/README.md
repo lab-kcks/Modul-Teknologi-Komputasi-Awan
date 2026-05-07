@@ -4,13 +4,8 @@
 
 1. [Pendahuluan](#1-pendahuluan)  
 2. [Konsep Logging & Monitoring](#2-konsep-logging--monitoring)  
-   - 2.1 Logging  
-   - 2.2 Monitoring  
 3. [Kenapa Logging & Monitoring Penting?](#3-kenapa-logging--monitoring-penting)  
 4. [Tools yang Digunakan](#4-tools-yang-digunakan)  
-   - 4.1 ELK Stack  
-   - 4.2 Prometheus 
-   - 4.3 Grafana
 5. [Arsitektur Sistem](#5-arsitektur-sistem)  
 6. [Implementasi ELK Stack](#6-implementasi-elk-stack)  
 
