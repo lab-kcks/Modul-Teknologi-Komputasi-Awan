@@ -232,20 +232,29 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
 5. Jalankan perintah `docker-compose up -d` untuk memulai layanan ELK Stack beserta Filebeat.
 6. Pastikan aplikasi sudah dikonfigurasi untuk menghasilkan log ke file `app.log` di dalam folder `logs` pada aplikasi. Contoh konfigurasi logging menggunakan winston pada Node.js:
     ```javascript
-    const winston = require('winston')
+    const winston = require("winston");
 
     const logger = winston.createLogger({
-        format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.json()
-        ),
-        transports:[
-            new winston.transports.Console(),
-            new winston.transports.File({filename: 'logs/app.log'})
-        ]
-    })
+    level: "info",
 
-    module.exports = logger
+    defaultMeta: {
+        service: "express-app",
+    },
+
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({
+        filename: "logs/app.log",
+        }),
+    ],
+    });
+
+    module.exports = logger;
     ```
     Contoh penggunaan logger di aplikasi:
     ```javascript
@@ -257,32 +266,34 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
     app.use(express.json());
 
     app.post("/log", (req, res) => {
-    const { level = "info", message = "No message provided" } = req.body;
+        const { level = "info", message = "No message provided" } = req.body;
 
-    logger.log({
-        level,
-        message,
-        service: "express-app",
-        endpoint: "/log",
-        method: "POST",
-    });
+        logger.log({
+            level,
+            message,
+            service: "express-app",
+            endpoint: "/log",
+            method: "POST",
+        });
 
-    res.json({
-        status: "Log berhasil ditulis",
-    });
+        res.json({
+            status: "Log berhasil ditulis",
+        });
     });
 
     app.listen(3000, () => {
-    logger.info({
-        message: "Server started",
-        service: "express-app",
-        port: 3000,
-    });
+        logger.info({
+            message: "Server started",
+            service: "express-app",
+            port: 3000,
+        });
 
-    console.log("🚀 App running on http://localhost:3000");
+        console.log("App running on http://localhost:3000");
     });
     ```
 7. Setelah aplikasi berjalan, coba kirim data log ke endpoint `/log` dengan menggunakan curl/postman/hoppscotch.
 ![alt text](images/image.png)
 8. Setelah data log berhasil dikirim, kita dapat cek di Kibana dengan memilih menu Discover lalu pilih data view yang telah dibuat sebelumnya untuk melihat log yang telah dikirim dari aplikasi.
 ![alt text](images/image11.png)
+9. Kita dapat memilih field-field yang ingin ditampilkan di Kibana, seperti endpoint, timestamp, method, message, level, dan service. Dengan cara ini, kita dapat dengan mudah memfilter dan mencari log berdasarkan field-field tersebut.
+![alt text](images/image12.png)
