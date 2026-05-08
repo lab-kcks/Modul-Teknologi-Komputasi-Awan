@@ -159,36 +159,36 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
     ```yaml
     services:
       elasticsearch:
-          image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-          environment:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+        environment:
           - discovery.type=single-node
           - xpack.security.enabled=false
           - cluster.name=elasticsearch
           - ES_JAVA_OPTS=-Xms1g -Xmx1g
-          ulimits:
+        ulimits:
           memlock:
-              soft: -1
-              hard: -1
-          ports:
+            soft: -1
+            hard: -1
+        ports:
           - "9200:9200"
   
-      logstash:
-          image: docker.elastic.co/logstash/logstash:8.11.0
-          volumes:
-          - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-          ports:
-          - "5000:5000" 
-          depends_on:
-          - elasticsearch
+    logstash:
+      image: docker.elastic.co/logstash/logstash:8.11.0
+      volumes:
+        - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      ports:
+        - "5000:5000"
+      depends_on:
+        - elasticsearch
   
-      kibana:
-          image: docker.elastic.co/kibana/kibana:8.11.0
-          environment:
-          - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-          ports:
-          - "5601:5601"
-          depends_on:
-          - elasticsearch
+    kibana:
+      image: docker.elastic.co/kibana/kibana:8.11.0
+      environment:
+        - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      ports:
+        - "5601:5601"
+      depends_on:
+        - elasticsearch
     ```
 2. Buat file `logstash.conf` untuk mengkonfigurasi Logstash agar dapat menerima data log dari aplikasi dan mengirimkannya ke Elasticsearch.
     ```conf
