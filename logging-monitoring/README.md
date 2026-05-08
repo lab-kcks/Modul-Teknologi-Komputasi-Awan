@@ -331,8 +331,16 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
 ## 7. Implementasi Prometheus
 Untuk mengimplementasikan Prometheus, kita dapat mengikuti langkah-langkah berikut:
 
-1. Buatlah folder khusus untuk aplikasi Node.js di dalam direktori proyek Anda:
-
+1. Buatlah folder khusus untuk aplikasi Node.js di dalam direktori:
+```
+project-root/
+├── docker-compose.yml
+├── prometheus.yml
+└── node-app/
+    ├── package.json
+    ├── Dockerfile
+    └── app.js
+```
 2. Di dalam folder node-app/, siapkan file berikut agar aplikasi dapat memproduksi metrics:
  - package.json:
 ```
