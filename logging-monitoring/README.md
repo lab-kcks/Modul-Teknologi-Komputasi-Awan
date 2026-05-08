@@ -322,34 +322,43 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
     ```javascript
     const express = require("express");
     const logger = require("./logger");
-
+    
     const app = express();
-
+    
     app.use(express.json());
-
+    
+    app.use((req, res, next) => {
+        req.logMeta = {
+            endpoint: req.originalUrl,
+            method: req.method,
+        };
+        next();
+    });
+    
     app.post("/log", (req, res) => {
         const { level = "info", message = "No message provided" } = req.body;
-
+    
         logger.log({
             level,
             message,
-            service: "express-app",
-            endpoint: "/log",
-            method: "POST",
+            ...req.logMeta,
         });
-
+    
         res.json({
-            status: "Log berhasil ditulis",
+            status: "success",
+            message: "Log entry created",
         });
     });
-
+    
     app.listen(3000, () => {
         logger.info({
             message: "Server started",
             service: "express-app",
+            endpoint: "/",
+            method: "LISTEN",
             port: 3000,
         });
-
+    
         console.log("App running on http://localhost:3000");
     });
     ```
