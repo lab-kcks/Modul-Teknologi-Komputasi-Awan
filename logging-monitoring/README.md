@@ -156,7 +156,6 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
     ![ELK Stack](images/image6.png)
     - Masukkan index pattern `app-logs-*` dan pilih @timestamp lalu save
     ![ELK Stack](images/image7.png)
-    - Setelah data view berhasil dibuat, kita dapat membuat dashboard dengan memilih menu Dashboard > Create Dashboard
 8. Lihat log di Kibana dengan memilih menu Discover lalu pilih data view yang telah dibuat sebelumnya
 ![ELK Stack](images/image8.png)
 
