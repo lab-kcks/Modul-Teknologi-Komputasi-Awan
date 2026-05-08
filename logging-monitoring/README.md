@@ -283,13 +283,13 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
     ```yaml
     filebeat.inputs:
     - type: filestream
-        id: app-logs
-        enabled: true
-        paths:
+      id: app-logs
+      enabled: true
+      paths:
         - /logs/app.log
-
+    
     output.logstash:
-    hosts: ["logstash:5044"]
+      hosts: ["logstash:5044"]
     ```
 5. Jalankan perintah `docker-compose up -d` untuk memulai layanan ELK Stack beserta Filebeat.
 6. Pastikan aplikasi sudah dikonfigurasi untuk menghasilkan log ke file `app.log` di dalam folder `logs` pada aplikasi. Contoh konfigurasi logging menggunakan winston pada Node.js:
