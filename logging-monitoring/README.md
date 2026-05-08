@@ -4,12 +4,11 @@
 
 1. [Pendahuluan](#1-pendahuluan)  
 2. [Konsep Logging & Monitoring](#2-konsep-logging--monitoring)  
-3. [Kenapa Logging & Monitoring Penting?](#3-kenapa-logging--monitoring-penting)  
-4. [Tools yang Digunakan](#4-tools-yang-digunakan)  
-5. [Arsitektur Sistem](#5-arsitektur-sistem)  
-6. [Implementasi ELK Stack](#6-implementasi-elk-stack)  
-7. [Implementasi Prometheus](#7-implementasi-prometheus)  
-8. [Implementasi Grafana](#8-implementasi-grafana)  
+3. [Tools yang Digunakan](#3-tools-yang-digunakan)  
+4. [Arsitektur Sistem](#4-arsitektur-sistem)  
+5. [Implementasi ELK Stack](#5-implementasi-elk-stack)  
+6. [Implementasi Prometheus](#6-implementasi-prometheus)  
+7. [Implementasi Grafana](#7-implementasi-grafana)  
 
 ## 1. Pendahuluan   
 
@@ -23,6 +22,7 @@ Semakin kompleks sistem, maka muncul tantangan utama:
 Untuk menjawab tantangan tersebut, digunakan konsep logging dan monitoring dalam sistem observability.
 
 ## 2. Konsep Logging & Monitoring
+![alt text](images/logmetric.gif)
 
 ### 2.1 Logging
 Logging adalah proses untuk mencatat semua kejadian yang terjadi dalam sistem.
@@ -42,25 +42,27 @@ Fungsi utama monitoring:
 2. Mendeteksi masalah sebelum menjadi kritis
 3. Memantau server, jaringan, dan aplikasi
 
-Contohnya, monitoring dapat digunakan untuk memantau penggunaan CPU, RAM, dan traffic jaringan untuk mengetahui apakah sistem mengalami beban berlebih.
+Monitoring bekerja dengan bantuan metrics, yaitu data numerik yang menggambarkan kondisi sistem secara terukur.
 
-## 3. Kenapa Logging & Monitoring Penting?
-Logging dan Monitoring saling melengkapi dalam sistem modern. Monitoring digunakan untuk mendeteksi adanya masalah pada sistem secara real-time, sedangkan logging digunakan untuk menganalisis penyebab dari masalah tersebut berdasarkan data historis yang tersimpan.
+Contohnya, monitoring dapat menggunakan metrics seperti CPU usage, RAM usage, dan traffic jaringan untuk mengetahui apakah sistem mengalami beban berlebih atau tidak.
 
-Kombinasi keduanya memberikan gambaran menyeluruh terhadap sistem, sehingga:
-- Proses troubleshooting lebih cepat
-- Performa sistem lebih optimal
-- Keamanan sistem lebih terjaga
+### 2.3 Perbedaan Logging dan Monitoring
+| Logging | Monitoring |
+| --- | --- |   
+| Mencatat kejadian yang sudah terjadi | Memantau kondisi sistem secara real-time |
+| Berfokus pada data berbentuk teks (logs) | Berfokus pada data numerik (metrics) | 
+| Digunakan untuk troubleshooting, debugging, dan audit | Digunakan untuk deteksi dini dan pemantauan performa |
 
-## 4. Tools yang Digunakan
-### 4.1 ELK Stack
+
+## 3. Tools yang Digunakan
+### 3.1 ELK Stack
 ELK Stack adalah kumpulan tiga alat open-source yang digunakan untuk logging dan analisis data:
 1. **Elasticsearch**: Mesin pencari dan analisis data yang digunakan untuk menyimpan dan mencari log.
 2. **Logstash**: Alat untuk mengumpulkan, memproses, dan mengirim data log ke Elasticsearch.
 3. **Kibana**: Alat visualisasi yang digunakan untuk membuat dashboard dan memvisualisasikan data log dari Elasticsearch.
 Fungsi utama ELK Stack adalah untuk mengelola dan menganalisis data log secara efisien, sehingga memudahkan proses troubleshooting dan pemantauan sistem.
 
-### 4.2 Prometheus
+### 3.2 Prometheus
 Prometheus adalah toolkit pemantauan (monitoring) dan sistem peringatan (alerting) open source yang awalnya dibangun di SoundCloud. Berbeda dengan ELK Stack yang berfokus pada Logs (teks kejadian), Prometheus berfokus pada Metrics (data numerik dalam rentang waktu tertentu). Prometheus mengumpulkan data dalam bentuk Time Series Data, yaitu data yang dicatat berdasarkan urutan waktu (misalnya: penggunaan CPU saat ini, jumlah request per detik, atau sisa memori).
 
 ### Tipe Metrics
@@ -98,7 +100,7 @@ rpc_duration_seconds{quantile="0.99"} 0.152
 
 ---
 
-### 4.3 Grafana
+### 3.3 Grafana
 Grafana adalah platform open-source untuk visualisasi dan analitik data yang banyak digunakan dalam sistem monitoring modern. Grafana tidak menyimpan data sendiri, melainkan terhubung ke berbagai data source (seperti Prometheus) dan menampilkan data tersebut dalam bentuk dashboard yang interaktif dan informatif.
 
 Dalam konteks modul ini, Grafana berfungsi sebagai lapisan visualisasi di atas Prometheus. Jika Prometheus bertugas mengumpulkan dan menyimpan metrics, maka Grafana bertugas menampilkan metrics tersebut secara visual agar lebih mudah dipahami.
@@ -129,7 +131,7 @@ Grafana juga mendukung sistem alerting, yaitu notifikasi otomatis yang dikirim k
 
 ---
 
-## 5. Arsitektur Sistem
+## 4. Arsitektur Sistem
 ```
                 Web Application
                         │
@@ -150,7 +152,7 @@ Web Application menghasilkan dua jenis data observability, yaitu logs dan metric
 - Logs dikirim dari Web Application ke Logstash. Logstash kemudian memproses, memfilter, dan menyimpan data ke Elasticsearch. Data log ini kemudian divisualisasikan menggunakan Kibana untuk kebutuhan analisis dan troubleshooting.
 - Metrics tidak dikirim langsung dari aplikasi ke Prometheus, melainkan diekspos oleh Web Application melalui endpoint khusus (misalnya /metrics). Prometheus kemudian melakukan proses scraping (pengambilan data secara berkala) dari endpoint tersebut untuk dikumpulkan sebagai time-series data. Data metrics ini kemudian divisualisasikan menggunakan Grafana dalam bentuk dashboard monitoring.
 
-## 6. Implementasi ELK Stack
+## 5. Implementasi ELK Stack
 Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah berikut:
 
 1. Buat file `docker-compose.yml` untuk mendefinisikan layanan Elasticsearch, Logstash, dan Kibana.
@@ -358,7 +360,7 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
 9. Kita dapat memilih field-field yang ingin ditampilkan di Kibana, seperti endpoint, timestamp, method, message, level, dan service. Dengan cara ini, kita dapat dengan mudah memfilter dan mencari log berdasarkan field-field tersebut.
 ![alt text](images/image12.png)
 
-## 7. Implementasi Prometheus
+## 6. Implementasi Prometheus
 Untuk mengimplementasikan Prometheus, kita dapat mengikuti langkah-langkah berikut:
 
 1. Buatlah folder khusus untuk aplikasi Node.js di dalam direktori:
@@ -510,7 +512,7 @@ http_requests_total{job="node-app"}
 ![alt text](images/image16.png)
 
 ---
-## 8. Implementasi Grafana
+## 7. Implementasi Grafana
 Implementasi Grafana dilakukan dengan menambahkan service Grafana ke dalam konfigurasi `docker-compose.yml` yang sudah ada dari implementasi Prometheus pada section 7. Grafana akan terhubung langsung ke Prometheus sebagai data source-nya.
 
 1. Tambahkan service grafana ke dalam file `docker-compose.yml` yang sudah ada:
