@@ -273,7 +273,7 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
         port: 3000,
     });
 
-    console.log("🚀 App running on http://localhost:3000");
+    console.log("App running on http://localhost:3000");
     });
     ```
 7. Setelah aplikasi berjalan, coba kirim data log ke endpoint `/log` dengan menggunakan curl/postman/hoppscotch.
