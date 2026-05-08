@@ -327,3 +327,145 @@ Filebeat akan membaca file log yang dihasilkan oleh aplikasi dan mengirimkannya 
 ![alt text](images/image11.png)
 9. Kita dapat memilih field-field yang ingin ditampilkan di Kibana, seperti endpoint, timestamp, method, message, level, dan service. Dengan cara ini, kita dapat dengan mudah memfilter dan mencari log berdasarkan field-field tersebut.
 ![alt text](images/image12.png)
+
+## 7. Implementasi Prometheus
+Untuk mengimplementasikan Prometheus, kita dapat mengikuti langkah-langkah berikut:
+
+1. Buatlah folder khusus untuk aplikasi Node.js di dalam direktori proyek Anda:
+
+2. Di dalam folder node-app/, siapkan file berikut agar aplikasi dapat memproduksi metrics:
+ - package.json:
+```
+{ "dependencies": { "express": "^4.18.2", "prom-client": "^15.0.0" } }
+```
+ - Dockerfile:
+```
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "app.js"]
+```
+ - app.js
+``` js
+const client = require('prom-client');
+
+const register = new client.Registry();
+
+// Aktifkan default metrics (CPU, memori, event loop, dll)
+client.collectDefaultMetrics({ register });
+
+// Custom counter untuk menghitung HTTP request
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total jumlah HTTP request',
+  labelNames: ['method', 'route', 'status'],
+  registers: [register],
+});
+
+// Tambahkan middleware untuk mencatat setiap request
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.path,
+      status: res.statusCode,
+    });
+  });
+  next();
+});
+
+// Endpoint /metrics untuk di-scrape oleh Prometheus
+app.get('/metrics', async (req, res) => {
+  res.setHeader('Content-Type', register.contentType);
+  res.send(await register.metrics());
+});
+```
+
+3. Buat file docker-compose.yml untuk mendefinisikan seluruh layanan (Prometheus, Exporters, dan Aplikasi):
+``` yaml
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+
+  node-app:
+    build: ./node-app
+    container_name: node-app
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  prometheus_data:
+```
+
+4. Buat file prometheus.yml untuk mendaftarkan semua target scraping:
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+  - job_name: "node-app"
+    static_configs:
+      - targets: ["node-app:3000"]
+```
+
+5. Jalankan perintah `docker compose up -d` untuk memulai semua layanan.
+
+6. Akses Prometheus UI melalui `http://localhost:9090`. Buka menu **Status > Target health** dan pastikan semua target berstatus **UP**.
+![alt text](images/image12.png)
+
+7. Testing dengan mengakses endpoint `/metrics` dari Node Exporter secara langsung menggunakan curl untuk memverifikasi bahwa metrics sudah tersedia.
+
+```bash
+curl http://localhost:9100/metrics
+```
+
+```bash
+curl http://localhost:3000/metrics # Metrics Aplikasi
+```
+8. Setelah itu, verifikasi data sudah masuk ke Prometheus dengan mencoba query di halaman **Query** pada Prometheus UI.
+```promql
+node_memory_MemAvailable_bytes
+```
+
+```promql
+http_requests_total{job="node-app"}
+```
