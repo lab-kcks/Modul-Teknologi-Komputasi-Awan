@@ -4,13 +4,8 @@
 
 1. [Pendahuluan](#1-pendahuluan)  
 2. [Konsep Logging & Monitoring](#2-konsep-logging--monitoring)  
-   - 2.1 Logging  
-   - 2.2 Monitoring  
 3. [Kenapa Logging & Monitoring Penting?](#3-kenapa-logging--monitoring-penting)  
 4. [Tools yang Digunakan](#4-tools-yang-digunakan)  
-   - 4.1 ELK Stack  
-   - 4.2 Prometheus 
-   - 4.3 Grafana
 5. [Arsitektur Sistem](#5-arsitektur-sistem)  
 6. [Implementasi ELK Stack](#6-implementasi-elk-stack)  
 
@@ -64,6 +59,42 @@ ELK Stack adalah kumpulan tiga alat open-source yang digunakan untuk logging dan
 Fungsi utama ELK Stack adalah untuk mengelola dan menganalisis data log secara efisien, sehingga memudahkan proses troubleshooting dan pemantauan sistem.
 
 ### 4.2 Prometheus
+Prometheus adalah toolkit pemantauan (monitoring) dan sistem peringatan (alerting) open source yang awalnya dibangun di SoundCloud. Berbeda dengan ELK Stack yang berfokus pada Logs (teks kejadian), Prometheus berfokus pada Metrics (data numerik dalam rentang waktu tertentu). Prometheus mengumpulkan data dalam bentuk Time Series Data, yaitu data yang dicatat berdasarkan urutan waktu (misalnya: penggunaan CPU saat ini, jumlah request per detik, atau sisa memori).
+
+### Tipe Metrics
+
+### 1. Counter
+Nilai yang hanya bisa **naik** (tidak pernah turun). Digunakan untuk menghitung jumlah kejadian kumulatif. Contoh: total request yang masuk, total error, total bytes yang dikirim.
+```
+http_requests_total{method="GET"} 1500
+```
+
+### 2. Gauge
+Nilai yang bisa **naik maupun turun**. Digunakan untuk nilai yang berubah-ubah. Contoh: penggunaan CPU, jumlah koneksi aktif, penggunaan memori saat ini.
+```
+node_memory_MemAvailable_bytes 2.34e+09
+process_open_fds 25
+```
+
+### 3. Histogram
+Mengukur distribusi nilai dalam beberapa **bucket** (rentang). Berguna untuk mengukur latensi request atau ukuran response.
+```
+http_request_duration_seconds_bucket{le="0.1"} 240
+http_request_duration_seconds_bucket{le="0.5"} 480
+http_request_duration_seconds_bucket{le="1.0"} 500
+http_request_duration_seconds_count 500
+http_request_duration_seconds_sum 120.4
+```
+
+### 4. Summary
+Mirip Histogram, tetapi menghitung **quantile** (persentil) di sisi client langsung. Kurang fleksibel dibandingkan Histogram karena quantile dihitung di aplikasi, bukan di Prometheus.
+```
+rpc_duration_seconds{quantile="0.5"} 0.052
+rpc_duration_seconds{quantile="0.9"} 0.098
+rpc_duration_seconds{quantile="0.99"} 0.152
+```
+
+---
 
 ### 4.3 Grafana
 
@@ -161,7 +192,6 @@ Untuk mengimplementasikan ELK Stack, kita dapat mengikuti langkah-langkah beriku
     ![ELK Stack](images/image6.png)
     - Masukkan index pattern `app-logs-*` dan pilih @timestamp lalu save
     ![ELK Stack](images/image7.png)
-    - Setelah data view berhasil dibuat, kita dapat membuat dashboard dengan memilih menu Dashboard > Create Dashboard
 8. Lihat log di Kibana dengan memilih menu Discover lalu pilih data view yang telah dibuat sebelumnya
 ![ELK Stack](images/image8.png)
 
