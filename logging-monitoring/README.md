@@ -8,6 +8,8 @@
 4. [Tools yang Digunakan](#4-tools-yang-digunakan)  
 5. [Arsitektur Sistem](#5-arsitektur-sistem)  
 6. [Implementasi ELK Stack](#6-implementasi-elk-stack)  
+7. [Implementasi Prometheus](#7-implementasi-prometheus)  
+8. [Implementasi Grafana](#8-implementasi-grafana)  
 
 ## 1. Pendahuluan   
 
@@ -97,7 +99,35 @@ rpc_duration_seconds{quantile="0.99"} 0.152
 ---
 
 ### 4.3 Grafana
+Grafana adalah platform open-source untuk visualisasi dan analitik data yang banyak digunakan dalam sistem monitoring modern. Grafana tidak menyimpan data sendiri, melainkan terhubung ke berbagai data source (seperti Prometheus) dan menampilkan data tersebut dalam bentuk dashboard yang interaktif dan informatif.
 
+Dalam konteks modul ini, Grafana berfungsi sebagai lapisan visualisasi di atas Prometheus. Jika Prometheus bertugas mengumpulkan dan menyimpan metrics, maka Grafana bertugas menampilkan metrics tersebut secara visual agar lebih mudah dipahami.
+
+### Komponen Utama Grafana
+#### 1. Data Source 
+Data source adalah koneksi antara Grafana dengan sumber data eksternal. Grafana mendukung banyak data source, di antaranya:
+1. **Prometheus**: untuk metrics time-series
+2. **Elasticsearch**: untuk data log
+3. **MySQL / PostgreSQL**: untuk data relasional
+4. **Loki**: untuk log aggregation
+
+#### 2. Dashboard
+Dashboard adalah kumpulan panel yang disusun dalam satu halaman. Dashboard dapat dikustomisasi sepenuhnya, termasuk tata letak, warna, dan filter waktu. Dashboard juga dapat disimpan, dibagikan, atau diimpor dari komunitas Grafana.
+
+#### 3. Panel
+Panel adalah unit visualisasi terkecil dalam Grafana. Setiap panel menampilkan satu query data dalam bentuk tertentu, misalnya:
+1. **Time series**: grafik nilai terhadap waktu
+2. **Stat**: menampilkan satu angka ringkasan (misalnya total request)
+3. **Gauge**: menampilkan nilai dalam bentuk dial/meter
+4. **Table**: menampilkan data dalam bentuk tabel
+
+#### 4. Query Editor
+Setiap panel memiliki query editor yang digunakan untuk mengambil data dari data source. Ketika menggunakan Prometheus sebagai data source, query ditulis menggunakan bahasa PromQL (Prometheus Query Language).
+
+#### 5. Alerting
+Grafana juga mendukung sistem alerting, yaitu notifikasi otomatis yang dikirim ke berbagai channel (email, Slack, Telegram, dll.) ketika kondisi tertentu terpenuhi, misalnya ketika penggunaan CPU melebihi 90%.
+
+---
 
 ## 5. Arsitektur Sistem
 ```
@@ -478,3 +508,136 @@ node_memory_MemAvailable_bytes
 http_requests_total{job="node-app"}
 ```
 ![alt text](images/image16.png)
+
+---
+## 8. Implementasi Grafana
+Implementasi Grafana dilakukan dengan menambahkan service Grafana ke dalam konfigurasi `docker-compose.yml` yang sudah ada dari implementasi Prometheus pada section 7. Grafana akan terhubung langsung ke Prometheus sebagai data source-nya.
+
+1. Tambahkan service grafana ke dalam file `docker-compose.yml` yang sudah ada:
+```
+services:
+      prometheus:
+        image: prom/prometheus:latest
+        container_name: prometheus
+        volumes:
+          - ./prometheus.yml:/etc/prometheus/prometheus.yml
+          - prometheus_data:/prometheus
+        ports:
+          - "9090:9090"
+        restart: unless-stopped
+
+      node-exporter:
+        image: prom/node-exporter:latest
+        container_name: node-exporter
+        ports:
+          - "9100:9100"
+        restart: unless-stopped
+
+      cadvisor:
+        image: gcr.io/cadvisor/cadvisor:latest
+        container_name: cadvisor
+        ports:
+          - "8080:8080"
+        volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:ro
+          - /sys:/sys:ro
+          - /var/lib/docker/:/var/lib/docker:ro
+        restart: unless-stopped
+
+      node-app:
+        build: ./node-app
+        container_name: node-app
+        ports:
+          - "3000:3000"
+        restart: unless-stopped
+
+      grafana:
+        image: grafana/grafana:latest
+        container_name: grafana
+        ports:
+          - "3001:3000"
+        environment:
+          - GF_SECURITY_ADMIN_USER=admin
+          - GF_SECURITY_ADMIN_PASSWORD=admin
+        volumes:
+          - grafana_data:/var/lib/grafana
+        depends_on:
+          - prometheus
+        restart: unless-stopped
+
+    volumes:
+      prometheus_data:
+      grafana_data:
+```
+
+> **Catatan:** Grafana berjalan di port `3000` secara internal di dalam container, namun di-mapping ke port `3001` di host agar tidak bentrok dengan `node-app` yang sudah menggunakan port `3000`.
+
+2. Jalankan ulang seluruh layanan dengan perintah berikut:
+```
+docker compose up -d
+```
+
+3. Akses Grafana melalui browser di http://localhost:3001. Login menggunakan kredensial default:
+
+    - Username: `admin`
+    - Password: `admin`
+
+    Grafana akan meminta untuk mengganti password setelah login pertama. Bisa diganti atau di-skip.
+
+4. Tambahkan Prometheus sebagai Data Source agar Grafana dapat membaca metrics yang sudah dikumpulkan:
+    - Buka menu **Connections** > **Data Sources** dari sidebar kiri
+    ![alt text](images/image-1.png)
+    - Klik **Add new data source** dan pilih **Prometheus**
+    ![alt text](images/image-grafana.png)
+    - Isi kolom Prometheus server URL dengan http://prometheus:9090 (menggunakan nama container karena Grafana dan Prometheus berada dalam satu jaringan Docker)
+    ![alt text](images/image-2.png)
+    - Scroll ke bawah, klik Save & test. Pastikan muncul notifikasi "Successfully queried the Prometheus API"
+    ![alt text](images/image-3.png)
+
+5. Buat Dashboard baru untuk memvisualisasikan metrics:
+  - Buka menu Dashboards dari sidebar kiri, lalu klik **New > New Dashboard**
+  ![alt text](images/image-4.png)
+  - Pada tampilan New dashboard, akan muncul panel Add di sebelah kanan. Klik thumbnail panel dengan ikon "+" untuk menambahkan panel baru
+  ![alt text](images/image-5.png)
+  - Klik configure untuk masuk ke mode edit panel
+  ![alt text](images/image-6.png)
+  - Pada bagian bawah layar, akan muncul Query editor. Pastikan data source yang dipilih adalah Prometheus
+  ![alt text](images/image-7.png)
+  - Switch tomboldari Builder ke Code di pojok kanan query editor untuk beralih ke mode input PromQL, lalu masukkan query berikut dan klik `Run queries`:
+    ```
+    node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100
+    ```
+    ![alt text](images/image-9.png)
+    > Query ini menghitung persentase memori yang masih tersedia terhadap total memori.
+  - Pastikan tipe visualisasi **Time series** sudah dipilih di dropdown pojok kanan atas
+    ![alt text](images/image-10.png)
+  - Pada panel **Panel options** di sebelah kanan, beri judul panel, misalnya `Memory Available (%)`
+    ![alt text](images/image-11.png)
+  - Klik **Save dashboard** lalu beri nama dashboard, misalnya `Node App Monitoring`
+
+6. Tambahkan panel baru seperti langkah sebelumnya untuk memantau total HTTP request dari node-app. Klik configure dan masukkan query berikut di bagian `code` seperti yang dilakukan pada langkah 5:
+    ```
+    sum(rate(http_requests_total{job="node-app"}[1m])) by (route, status)
+    ```
+    ![alt text](images/image-12.png)
+    > Query ini menghitung rata-rata request per detik dalam 1 menit terakhir, dikelompokkan berdasarkan route dan status HTTP.
+  - Klik tombol **Run queries** untuk menjalankan query
+  - Ubah tipe visualisasi menjadi **Time series**
+    ![alt text](images/image-13.png)
+  - Beri judul `HTTP Request Rate (node-app)`
+  - Klik **Save dashboard**
+
+7.  Dashboard sudah tersimpan. Beriku adalah tampilan akhir dari dashboard yang sudah dibuat:
+  ![alt text](images/image-14.png)
+
+8. Untuk melakukan pengujian, generate beberapa HTTP request ke node-app menggunakan curl:
+    ```
+    curl http://localhost:3000/metrics
+    curl http://localhost:3000/metrics
+    curl http://localhost:3000/metrics
+    ```
+    Kemudian amati perubahan pada dashboard Grafana. Grafik `HTTP Request Rate` akan menampilkan lonjakan sesuai jumlah request yang dikirim.
+    ![alt text](images/image-15.png)
+
+> Tips: Grafana juga menyediakan ribuan dashboard siap pakai yang bisa diimpor dari komunitas di [grafana.com/grafana/dashboards](https://grafana.com/grafana/dashboards). Untuk mengimpornya, buka menu **Dashboards > New > Import**, masukkan ID tersebut, lalu klik Load.
