@@ -450,7 +450,7 @@ scrape_configs:
 5. Jalankan perintah `docker compose up -d` untuk memulai semua layanan.
 
 6. Akses Prometheus UI melalui `http://localhost:9090`. Buka menu **Status > Target health** dan pastikan semua target berstatus **UP**.
-![alt text](images/image13.png)
+![alt text](images/image14.png)
 
 7. Testing dengan mengakses endpoint `/metrics` dari Node Exporter secara langsung menggunakan curl untuk memverifikasi bahwa metrics sudah tersedia.
 
@@ -465,7 +465,8 @@ curl http://localhost:3000/metrics # Metrics Aplikasi
 ```promql
 node_memory_MemAvailable_bytes
 ```
-
+![alt text](images/image15.png)
 ```promql
 http_requests_total{job="node-app"}
 ```
+![alt text](images/image16.png)
