@@ -135,44 +135,27 @@ Silakan mengikuti struktur berikut
 
 Di dalam folder app, app2, dan app3, buat file main.py berikut
 
-> Note: Jangan lupa diubah yh "This is server A" menjadi B dan C untuk masing-masing folder agar terlihat perbedaannya saat di-test.
+> Note: Jangan lupa diubah yh "This is server A" menjadi B dan C untuk masing-masing folder agar terlihat perbedaannya saat di-test
 
 ```python
-from fastapi import FastAPI, Body, Request # FastAPI utama
-from fastapi.encoders import jsonable_encoder # JSON Handler
-import pymongo # Menghubungkan ke Database MongoDB
-from pydantic import BaseModel #
-from bson.objectid import ObjectId # Identifikasi ID pada mongoDB
-import uuid # Default ID Generator
-import socket # Identifier tiap docker
-import time # Simulasi waktu request
-```
+from fastapi import FastAPI, Body, Request
+from fastapi.encoders import jsonable_encoder
+import pymongo
+from pydantic import BaseModel
+from bson.objectid import ObjectId
+import socket
+import time
 
-selanjutnya, mari kita menghubungkan python dengan database mongoDB.
-
-```python
-MONGO_DETAILS = "mongodb://admin:admin@mongodb:27017/" # nama aplikasi docker mongodb
+MONGO_DETAILS = "mongodb://admin:admin@mongodb:27017/" 
 client = pymongo.MongoClient(MONGO_DETAILS)
-db = client['tes'] # nama databesnya 'tes'
-collection = db['tes'] # nama collectionnya 'tes'
-```
+db = client['tes'] 
+collection = db['tes'] 
 
-untuk nama database dan collection bisa disesuaikan.
-
-Selanjutnya, mendefinisikan jenis data di dalam collection:
-
-```python
 class Item(BaseModel):
     name: str
     age: int
     rank: str
-```
 
-collection mongoDB akan menggunakan struktur di atas.
-
-Kemudian, mari mendefinisikan fungsi-fungsi untuk me-return data:
-
-```python
 def myData(data):
     return {
         "id": str(data["_id"]),
@@ -184,84 +167,38 @@ def myData(data):
 def myFullData(datas):
     return [myData(data) for data in datas]
 
-
 def ResponseModel(data, message = "Success"):
-    return {
-        "data": [data],
-        "code": 200,
-        "message": message,
-    }
+    return {"data": [data], "code": 200, "message": message}
 
 def ErrorResponseModel(error, code, message):
-    return {
-        "error": error,
-        "code": code,
-        "message": message
-    }
-```
+    return {"error": error, "code": code, "message": message}
 
-Penjelasannya:
-
-- `myData` untuk me-return data dengan format menyesuaikan struktur data atau lainnya.
-- `myFullData` untuk mengembalikan seluruh isi data pada collection.
-- `ResponseModel` sebagai handler data jika berhasil dilakukan.
-- `ErrorResponseModel` sebagai handler data jika gagal dilakukan.
-
-Setelah seluruh handler telah dibuat, mari kita ke _main course_, yaitu pembu8atan REST API dengan FastAPI.
-
-Deklarasikan aplikasi
-
-```pyhton
 app = FastAPI()
-```
 
-Kita akan menggunakan 6 endpoint untuk mensimulasikan aplikasi REST API sederhana.
-
-- `GET /` sebagai testing.
-- `GET /fast` sebagai testing dengan response cepat.
-- `GET /slow` sebagai testing dengan response lambat.
-- `GET /all` mendapatkan semua data pada collection.
-- `POST /create` memasukkan data baru pada collection.
-- `GET /get/{id}` mendapatkan data sesuai id.
-
-berikut implementasinya:
-
-```python
 @app.get('/')
 async def home():
-    return {
-        "message": "This is server A",
-        "hostname": socket.gethostname()}
+    return {"message": "This is server A", "hostname": socket.gethostname()}
 
 @app.get('/fast')
 async def hello():
     time.sleep(0.5)
-    return {
-        "message": "Hello world from server A",
-        "opt": "fast"}
+    return {"message": "Hello world from server A", "opt": "fast"}
 
 @app.get('/slow')
 async def hello():
     time.sleep(1)
-    return {
-        "message": "Hello world from server A",
-        "opt": "slow"}
+    return {"message": "Hello world from server A", "opt": "slow"}
 
 @app.get("/all")
 async def get_all_data():
-    # print(client.tes.tes.find())
-    # print(myFullData(client.tes.tes.find()))
     return ResponseModel(myFullData(collection.find()), "All Good")
 
-# insert new data
 @app.post("/create", response_model=Item)
 async def create_data(request: Request, lister: Item = Body(..., embed=True)):
     lister = jsonable_encoder(lister)
     new_data = client.tes.tes.insert_one(lister)
-    # return response with data inserted
     return lister
 
-# get data by id
 @app.get("/get/{id}")
 async def get_data(id: str):
     Objinstance = ObjectId(id)
@@ -272,7 +209,7 @@ async def get_data(id: str):
         return ErrorResponseModel("An error occurred.", 404, "Data doesn't exist.")
 ```
 
-### Konfigurasi Dockerfile
+### 4.3 Konfigurasi Dockerfile
 
 Adapun isi docker diisi berikut:
 
@@ -284,13 +221,9 @@ RUN pip install -r requirements.txt
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-Docker akan membuat folder app dan akan menginstall seluruh requirement di dalam file requirement.txt
+Docker akan membuat folder app dan akan menginstall seluruh requirement di dalam file `requirement.txt`. Saat docker diluncurkan, DOcker python akan menjalankan `uvicorn` pada port `8000`, uvicorn akan menjalankan file main dengan aplikasi app (akan dijelakan pada pembuatan FastAPI)
 
-Saat docker diluncurkan, DOcker python akan menjalankan `uvicorn` pada port `8000`
-
-uvicorn akan menjalankan file main dengan aplikasi app (akan dijelakan pada pembuatan FastAPI).
-
-### Konfigurasi requirement.txt
+### 4.4 Konfigurasi requirement.txt
 
 silakan memasukkan library-library yang akan digunakan:
 
@@ -302,7 +235,7 @@ pydantic
 uuid
 ```
 
-### Konfigurasi nginx
+### 4.5 Konfigurasi nginx
 
 Pada nginx, kita akan mengkonfigurasikan Dockerfile dan file konfigurasi.
 
@@ -331,13 +264,9 @@ server {
 }
 ```
 
-mengingat seluruh app akan dijalankan di docker port **8000** dan nginx akan dijalankan pada host port **80**
+mengingat seluruh app akan dijalankan di docker port **8000** dan nginx akan dijalankan pada host port **80**. `proxy_pass http://app` nama app menyesuaikan nama uvicorn yang dijalankan. Dari upstream yang kita masukkan, load balancer yang akan digunakan adalan **Round-Robin**
 
-`proxy_pass http://app` nama app menyesuaikan nama uvicorn yang dijalankan (main:app)
-
-Dari upstream yang kita masukkan, load balancer yang akan digunakan adalan **Round-Robin**
-
-### Konfigurasi docker-compose
+### 4.6 Konfigurasi docker-compose
 
 Pada docker compose, ada beberapa docker image yang akan digunakan, berupa:
 
@@ -404,7 +333,7 @@ volumes:
     driver: local
 ```
 
-### app, app2, app3
+#### app, app2, app3
 
 pada service `app` `app2` `app3`, pastikan arah file sudah menuju folder yang memiliki Dockerfile yang telah dibuat sebelumnya.
 
@@ -412,50 +341,6 @@ adapun host ports yang akan digunakan tiap service adalah **8001** **8002** **80
 _Why?_ karena kita menjalankan `uvicorn` tiap app di port 8000 namun tiap docker harus dijalankan di port host yang berbeda.
 
 Karena aplikasi akan menghubungkan database, dan databse perlu di load terbih dahulu, maka tambahkan mongodb
-
-### nginx
-
-build diarahkan ke folder berisi Dockerfile nginx.
-
-port yang akan digunakan minimal `80:80`.
-
-nginx akan bergantung penggunaanya dengan app yang ada, sehingga ditambahkan `depends_on` ke tiap app.
-
-### mongodb
-
-Karena kita tidak menkonfigurasikan Dockerfile, kita akan load image dari repository Docker bernama `mongo`.
-
-Port mongo dijalankan di `27017:27017` (default).
-
-_WAJIB_ memasukkan `MONGO_INITDB_ROOT_USERNAME` dan `MONGO_INITDB_ROOT_PASSWORD` untuk setup awal database.
-
-Agar isi database tidak berubah setiap docker-composer di up, deklarasikan `volumes` dan mengisi sesuai isi di atas.
-di luar strukture services, jangan lupa deklarasikan:
-
-```yaml
-volumes:
-  mongodb_data:
-    driver: local
-```
-
-## mongo-express
-
-Media penampilan database mongodb pada webUI.
-
-Deklarasikan image `mongo-express` karena tidak ada konfigurasi tambahan.
-
-Defaut port mongo-express adalah **8081** Jalankan pada ports **8082:8081**.
-
-Adapun environtment yang perlu disetup:
-
-- `ME_CONFIG_MONGODB_ADMINUSERNAME=admin` username ke mongodb
-- `ME_CONFIG_MONGODB_ADMINPASSWORD=admin` password ke mongodb
-- `ME_CONFIG_MONGODB_SERVER=mongodb` nama server mongodbyang digunakan (sesuai nama services)
-- `ME_CONFIG_MONGODB_ENABLE_ADMIN=true` menghidupkan admin
-- `ME_CONFIG_BASICAUTH_USERNAME=admin` username untuk mengakses webUI
-- `ME_CONFIG_BASICAUTH_PASSWORD=admin` password untuk mengakses webUI
-
-karena mongo-express harus menunggu mongodb selesai load, maka harus menambahkan mongodb pada `depends_on`.
 
 ## Done 🎉🎉
 
@@ -476,8 +361,8 @@ Kemudiian buka `localhost` dan coba refresh beberapa kali
 untuk setup mongodb, maka buka `localhost:8082`, kemudian masukkan username dan password yang sudah ditentukan sebelumnya.
 ![mongodb](./img/mongodb.png)
 
-Langkagh selanjutnya:
-`masukkan nama databse baru > Tekan create database > Buka database > masukkan nama koleksi baru > tekan Create collection`
+Langkah selanjutnya:
+`masukkan nama database baru > Tekan create database > Buka database > masukkan nama koleksi baru > tekan Create collection`
 
 Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 
