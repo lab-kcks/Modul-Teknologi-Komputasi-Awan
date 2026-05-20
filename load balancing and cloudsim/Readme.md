@@ -1,50 +1,89 @@
-# # Modul 5 - Cloudsim & Load balancing
+# Modul 5 - Cloudsim & Load balancing
 
-Cloud Load balancing adalah sebuah proses mendistribusikan beban kerja (workload) kepada seluruh sumber daya di lingkungan komputasi awan tertentu dengan konsiderasi jaringan lalu lintas.
+## Daftar Isi
 
-Cara kerjanya, load balancer mendapat workload dan me-routing ke sumber daya sehingga workload yang lain diurus terus-menerus tanpa ada waiting yang panjang. Tidak hanya dalam beberapa server, load balancing bisa melakukan distribusi secara geographical.
+1. [Pendahuluan](#1-pendahuluan)  
+2. [Konsep Load Balancing](#2-konsep-load-balancing)
+3. [Tools yang Digunakan](#3-tools-yang-digunakan)
+4. [Implementasi Load Balancing Sederhana](#4-implementasi-load-balancer-sederhana)
 
-![Struktur Load balancing pada umumnya](https://cdn.ttgtmedia.com/rms/onlineimages/networking-load_balancing.png)
+## 1. Pendahuluan
+
+Dalam sistem berbasis komputasi awan, aplikasi tidak hanya berjalan di satu server, tetapi tersebar di banyak node, virtual machine, atau container yang bekerja secara bersamaan. Setiap permintaan dari pengguna perlu diarahkan ke salah satu dari sekian banyak resource yang tersedia
+
+Semakin tinggi jumlah pengguna dan permintaan, maka muncul tantangan utama:
+1. Bagaimana cara kita menjaga ketersediaan layanan ketika salah satu server mengalami kegagalan?
+2. Bagaimana kita memastikan tidak ada satu server pun yang kelebihan beban sementara server lain menganggur?
+3. Bagaimana kita dapat mendistribusikan beban kerja secara efisien agar performa sistem tetap optimal?
+
+Untuk menjawab tantangan tersebut, digunakanlah sebuah konsep yang disebut dengan **load balancing**
+
+## 2. Konsep Load Balancing
+
+### 2.1 Apa itu Load Balancing?
+Load balancing sendiri adalah sebuah mekanisme yang mengatur distribusi traffic atau beban komputasi ke beberapa server secara merata dan cerdas
+
+![Gambaran Load Balancing](images\load-balancing-visualized.png)
 
 Contoh Penyedia Layanan Cloud Load Balancing:
 
-- Amazon Web Services (AWS) menggunakan Elastic Load Balancing (ELB).
-- Google Cloud Platform (GCP) menggunakan Google Cloud Load Balancing.
-- Microsoft Azure menggunakan Azure Load Balancer.
+* Amazon Web Services (AWS) menggunakan Elastic Load Balancing (ELB)
+* Google Cloud Platform (GCP) menggunakan Google Cloud Load Balancing
+* Microsoft Azure menggunakan Azure Load Balancer
 
-## Load Balancer Algorithm
+### 2.2 Load Balancing Algorithms
 
-Dibagi menjadi 2
+Sama seperti berbagai sistem di dunia IT, load balancing juga memiliki beberapa algoritma yang berbeda. Setiap algoritma memiliki logika dan cara kerjanya masing-masing dalam menentukan server mana yang paling tepat untuk menerima traffic atau beban kerja pada saat itu
 
+![Algorithms](images/algorithms.gif)
+
+Load balancing sendiri bisa dibagi menjadi 2, yaitu:
 1. **Static**
-   - **Round robin**
-     Pembagian menggunakan DNS dalam bentuk rotasi.
-   - **Weighted round robin**
-     Pembagian berdasarkan beban yang ditentukan. Jika bisa handle traffic besar, makan weight nya makin besar.
-   - **IP hash**
-     Menggunakan fungsi matematika untuk mengubah IP Address ke hash. Berdasarkan hash tersebut, koneksi dihubungkan pada server tersebut.
+    * **Round robin**
+        Pembagian menggunakan DNS dalam bentuk rotasi
+    * **Weighted round robin**
+        Pembagian berdasarkan beban yang ditentukan. Jika bisa handle traffic besar, makan weight nya makin besar
+    * **IP hash**
+        Menggunakan fungsi matematika untuk mengubah IP Address ke hash. Berdasarkan hash tersebut, koneksi dihubungkan pada server tersebut
 
 2. Dynamic
-   - **Least connection**
-     Melihat server yang memiliki koneksi yang sedikit (Asumsi seluruh kekuatan proses sama).
-   - **Weighted response time**
-     Melihat rata-rata waktu respons tiap server, tetapi juga melihat jumlah koneksi pada server.
-   - **Resource-based**
-     Melihat sumber daya (eg. CPU) pada server. Memerlukan 'agent' yang dapat memonitor sumber daya server.
+    * **Least connection**
+        Melihat server yang memiliki koneksi yang sedikit (Asumsi seluruh kekuatan proses sama)
+    * **Weighted response time**
+        Melihat rata-rata waktu respons tiap server, tetapi juga melihat jumlah koneksi pada server
+    * **Resource-based**
+        Melihat sumber daya (eg. CPU) pada server. Memerlukan 'agent' yang dapat memonitor  sumber daya server
 
 Dan masih banyak lagi!
 
-## NGINX
+## 3. Tools yang Digunakan
 
-Merupakan program _open source_ yang digunakan untuk web serving, reverse proxy, caching, load balancing, streaming, dll.
+Pada modul kali ini, kita akan melakukan simulasi load balancing dari dua POV yang berbeda menggunakan dua buah tools:
 
----
+| Tool | Fokus | Konsep Utama |
+| :--- | :--- | :--- |
+| **NGINX** | Jaringan (*Network/Web*) | Mendistribusikan *traffic* HTTP/API ke beberapa *container* aplikasi |
+| **CloudSim** | Komputasi (*Compute/Task*) | Mendistribusikan tugas komputasi (*Task Scheduling*) ke dalam Mesin Virtual (VM) |
 
-# Setup Load Balancer
+### 3.1 NGINX
+NGINX adalah program *open-source* berkinerja tinggi yang sering digunakan untuk *web serving*, *reverse proxying*, *caching*, dan **load balancing**. Pada praktikum ini, NGINX akan bertindak sebagai pintu masuk utama yang membagi *request* API dari *client* menuju tiga aplikasi *backend* yang berbeda (menggunakan *Round Robin*)
 
-## Menginstall Library
+### 3.2 CloudSim
+CloudSim adalah kerangka kerja atau *framework* berbasis Java yang bersifat *open-source* juga, biasanya digunakan untuk memodelkan dan mensimulasikan infrastruktur serta layanan komputasi awan. Berbeda dengan NGINX yang membagi koneksi web, CloudSim mensimulasikan bagaimana **tugas-tugas komputasi (*Task Scheduling*)** dibagi ke dalam pusat data
 
-Untuk host, akan menggunakan `Docker` dan `Docker Compose` dengan `FastAPI` dan `MongoDB` sebagai Database.
+![Cloudsim Components](images/components.png)
+
+**Komponen Utama CloudSim:**
+* **Datacenter:** Memodelkan perangkat keras fisik (*Host/Server*) yang membentuk lingkungan *cloud*. Mengatur kebijakan alokasi VM
+* **Broker:** Entitas yang bertindak atas nama pengguna. Bertanggung jawab mengelola pengiriman tugas (*Cloudlet*) ke VM
+* **Cloudlet:** Merepresentasikan tugas/aplikasi yang akan dieksekusi (contoh: pemrosesan data). Memiliki parameter seperti ukuran, panjang instruksi (dalam *Million Instructions* / MI), dll
+* **VM (Virtual Machine):** Merepresentasikan mesin virtual yang memproses *Cloudlet*. Memiliki atribut seperti RAM, Bandwidth, dan MIPS (*Million Instructions Per Second*)
+
+## 4. Implementasi Load Balancer Sederhana
+
+Pada modul ini, kita akan mencoba membangun *load balancer* dengan menggunakan **Docker**, **FastAPI** (Python), dan **MongoDB**
+
+Untuk host, akan menggunakan `Docker` dan `Docker Compose` dengan `FastAPI` dan `MongoDB` sebagai Database
 Jadi, mari menginstall ketiga library tersebut dengan:
 
 1. Docker dan Docker Compose
