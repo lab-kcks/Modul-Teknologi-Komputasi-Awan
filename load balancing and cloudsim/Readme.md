@@ -6,6 +6,7 @@
 2. [Konsep Load Balancing](#2-konsep-load-balancing)
 3. [Tools yang Digunakan](#3-tools-yang-digunakan)
 4. [Implementasi Load Balancing Sederhana](#4-implementasi-load-balancer-sederhana)
+5. [Implementasi Task Scheduling dengan CloudSim](#5-implementasi-task-scheduling-dengan-cloudsim)
 
 ## 1. Pendahuluan
 
@@ -133,7 +134,7 @@ Silakan mengikuti struktur berikut
 
 ### 4.2 Konfigurasi Aplikasi (FastAPI)
 
-Di dalam folder app, app2, dan app3, buat file main.py berikut
+Di dalam folder app, app2, dan app3, buat file `main.py` berikut
 
 > Note: Jangan lupa diubah yh "This is server A" menjadi B dan C untuk masing-masing folder agar terlihat perbedaannya saat di-test
 
@@ -271,9 +272,9 @@ mengingat seluruh app akan dijalankan di docker port **8000** dan nginx akan dij
 Pada docker compose, ada beberapa docker image yang akan digunakan, berupa:
 
 - NGINX
-- mongo dan mongo-express
+- Mongo dan Mongo-express
 
-buatlah docker-compose dengan isi seperti di bawah ini:
+buatlah `docker-compose` dengan isi seperti di bawah ini:
 
 ```yaml
 version: "3"
@@ -333,7 +334,6 @@ volumes:
     driver: local
 ```
 
-#### app, app2, app3
 
 pada service `app` `app2` `app3`, pastikan arah file sudah menuju folder yang memiliki Dockerfile yang telah dibuat sebelumnya.
 
@@ -381,37 +381,18 @@ Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 
 ---
 
-# Task Scheduling
+## 5. Implementasi Task Scheduling dengan CloudSim
 
-Merupakan proses mengelola eksekusi tugas di cloud. "Tugas" disini merupakan komputasi seperti pemrosesan data, analisis, komputasi pararel, dan lain-lain.
+Task Scheduling merupakan proses mengelola eksekusi tugas di dalam cloud. "Tugas" disini adalah komputasi berat seperti pemrosesan data, analisis, dan komputasi paralel.
 
-## CloudSim
-
-CloudSim adalah kerangka kerja sumber terbuka, yang digunakan untuk mensimulasikan infrastruktur dan layanan komputasi awan. Ini dikembangkan oleh organisasi CLOUDS Lab dan ditulis sepenuhnya dalam bahasa Java. Ini digunakan untuk memodelkan dan mensimulasikan lingkungan komputasi awan sebagai sarana untuk mengevaluasi hipotesis sebelum pengembangan perangkat lunak untuk mereproduksi pengujian dan hasil.
-
-[![Cloudsim Diagram](https://miro.medium.com/v2/resize:fit:640/format:webp/1*4A6S9nEFpN1lmoYiW0MyBg.png)](https://medium.com/ingkwan/getting-started-with-cloudsim-631e7f6b85d6)
-
-## Komponen
-
-1. Datacenter
-   digunakan untuk memodelkan peralatan perangkat keras dasar dari setiap lingkungan cloud, yaitu Pusat Data. Kelas ini menyediakan metode untuk menentukan persyaratan fungsional Pusat Data serta metode untuk mengatur kebijakan alokasi VM, dll.
-2. Broker
-   adalah entitas yang bertindak atas nama pengguna/pelanggan. Ini bertanggung jawab atas fungsi VM, termasuk pembuatan, pengelolaan, penghancuran, dan pengiriman cloudlet ke VM.
-3. Cloudlet
-   kelas cloudlet mewakili tugas apa pun yang dijalankan pada VM, seperti tugas pemrosesan, atau tugas akses memori, atau tugas pembaruan file, dll. Kelas ini menyimpan parameter yang mendefinisikan karakteristik tugas seperti panjang, ukuran, mi (juta instruksi) dan menyediakan metode yang serupa dengan kelas VM, serta menyediakan metode yang mendefinisikan waktu eksekusi, status, biaya, dan riwayat tugas.
-4. VM
-   kelas ini merepresentasikan mesin virtual dengan menyediakan anggota data yang mendefinisikan bandwidth, RAM, mips (juta instruksi per detik), ukuran VM, dan juga menyediakan metode pengatur dan pengambil untuk parameter-parameter ini.
-
-## Task Scheduling Algorithm
+### 5.1 Task Scheduling Algorithms
 
 Beberapa algorithm yang akan dibahas pada modul ini:
 
-1. Round Robin
-   Task diberi secara 'melingkar'. Bisa menangani banyak pekerjaan, tetapi throughput bisa kecil dan waktu tunggu yang lama pada beberapa task.
-2. Shortest Job First (SJF)
-   Melihat jumlah waktu proses terkecil. Waktu turnaround cepat, tetapi memrlukan estamis wktu proses yang akurat agar menjadi efektif.
+1. **Round Robin**: Task (Cloudlet) diberikan ke mesin (VM) secara melingkar. Mampu menangani banyak pekerjaan secara adil, tetapi bisa menyebabkan waktu tunggu (waiting time) yang lama pada beberapa task besar karena throughput yang kecil
+2. **Shortest Job First (SJF)**: Memprioritaskan task dengan estimasi waktu proses terkecil. Waktu turnaround cepat, tetapi memerlukan estimasi waktu proses yang sangat akurat agar efektif.
 
-## Instalasi
+### 5.2 Instalasi & Persiapan Tools
 
 Beberapa komponen yang perlu diinstall:
 
@@ -423,7 +404,9 @@ Video Tutorial menyiapkan tools:
 
 [![Tutorial](https://img.youtube.com/vi/OZRbkkEuQMI/0.jpg)](https://www.youtube.com/watch?v=OZRbkkEuQMI "Ditonton bagus-bagus yaw")
 
-Atau tanya asisten lmao
+Atau tanya asisten LMAO :joy::joy::joy:
+
+### 5.3 Menjalankan Simulasi
 
 Setelah selesai disiapkan, download repository berikut:
 https://github.com/michaelfahmy/cloudsim-task-scheduling/tree/master
