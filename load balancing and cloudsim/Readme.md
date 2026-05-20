@@ -83,7 +83,6 @@ CloudSim adalah kerangka kerja atau *framework* berbasis Java yang bersifat *ope
 
 Pada modul ini, kita akan mencoba membangun *load balancer* dengan menggunakan **Docker**, **FastAPI** (Python), dan **MongoDB**
 
-Untuk host, akan menggunakan `Docker` dan `Docker Compose` dengan `FastAPI` dan `MongoDB` sebagai Database
 Jadi, mari menginstall ketiga library tersebut dengan:
 
 1. Docker dan Docker Compose
@@ -109,7 +108,7 @@ pip install uvicorn
 pip install pymango pydantic
 ```
 
-## Menyiapkan Struktur Folder/File
+### 4.1 Menyiapkan Struktur Folder/File
 
 Silakan mengikuti struktur berikut
 
@@ -132,9 +131,11 @@ Silakan mengikuti struktur berikut
     └── locustfile.py
 ```
 
-## Konfigurasi main.py
+### 4.2 Konfigurasi Aplikasi (FastAPI)
 
-mengimport library
+Di dalam folder app, app2, dan app3, buat file main.py berikut
+
+> Note: Jangan lupa diubah yh "This is server A" menjadi B dan C untuk masing-masing folder agar terlihat perbedaannya saat di-test.
 
 ```python
 from fastapi import FastAPI, Body, Request # FastAPI utama
@@ -271,7 +272,7 @@ async def get_data(id: str):
         return ErrorResponseModel("An error occurred.", 404, "Data doesn't exist.")
 ```
 
-## Konfigurasi Dockerfile
+### Konfigurasi Dockerfile
 
 Adapun isi docker diisi berikut:
 
@@ -289,7 +290,7 @@ Saat docker diluncurkan, DOcker python akan menjalankan `uvicorn` pada port `800
 
 uvicorn akan menjalankan file main dengan aplikasi app (akan dijelakan pada pembuatan FastAPI).
 
-## Konfigurasi requirement.txt
+### Konfigurasi requirement.txt
 
 silakan memasukkan library-library yang akan digunakan:
 
@@ -301,7 +302,7 @@ pydantic
 uuid
 ```
 
-## Konfigurasi nginx
+### Konfigurasi nginx
 
 Pada nginx, kita akan mengkonfigurasikan Dockerfile dan file konfigurasi.
 
@@ -334,13 +335,13 @@ mengingat seluruh app akan dijalankan di docker port **8000** dan nginx akan dij
 
 `proxy_pass http://app` nama app menyesuaikan nama uvicorn yang dijalankan (main:app)
 
-Dari upstream yang kita masukkan, load balancer yang akan digunakan adalan **Round-Robin**.
+Dari upstream yang kita masukkan, load balancer yang akan digunakan adalan **Round-Robin**
 
-## Konfigurasi docker-compose
+### Konfigurasi docker-compose
 
 Pada docker compose, ada beberapa docker image yang akan digunakan, berupa:
 
-- nginx
+- NGINX
 - mongo dan mongo-express
 
 buatlah docker-compose dengan isi seperti di bawah ini:
