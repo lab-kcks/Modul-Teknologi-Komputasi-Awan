@@ -23,7 +23,7 @@ Untuk menjawab tantangan tersebut, digunakanlah sebuah konsep yang disebut denga
 ### 2.1 Apa itu Load Balancing?
 Load balancing sendiri adalah sebuah mekanisme yang mengatur distribusi traffic atau beban komputasi ke beberapa server secara merata dan cerdas
 
-![Gambaran Load Balancing](images\load-balancing-visualized.png)
+![Gambaran Load Balancing](img\load-balancing-visualized.png)
 
 Contoh Penyedia Layanan Cloud Load Balancing:
 
@@ -35,7 +35,7 @@ Contoh Penyedia Layanan Cloud Load Balancing:
 
 Sama seperti berbagai sistem di dunia IT, load balancing juga memiliki beberapa algoritma yang berbeda. Setiap algoritma memiliki logika dan cara kerjanya masing-masing dalam menentukan server mana yang paling tepat untuk menerima traffic atau beban kerja pada saat itu
 
-![Algorithms](images/algorithms.gif)
+![Algorithms](img/algorithms.gif)
 
 Load balancing sendiri bisa dibagi menjadi 2, yaitu:
 1. **Static**
@@ -71,7 +71,7 @@ NGINX adalah program *open-source* berkinerja tinggi yang sering digunakan untuk
 ### 3.2 CloudSim
 CloudSim adalah kerangka kerja atau *framework* berbasis Java yang bersifat *open-source* juga, biasanya digunakan untuk memodelkan dan mensimulasikan infrastruktur serta layanan komputasi awan. Berbeda dengan NGINX yang membagi koneksi web, CloudSim mensimulasikan bagaimana **tugas-tugas komputasi (*Task Scheduling*)** dibagi ke dalam pusat data
 
-![Cloudsim Components](images/components.png)
+![Cloudsim Components](img/components.png)
 
 **Komponen Utama CloudSim:**
 * **Datacenter:** Memodelkan perangkat keras fisik (*Host/Server*) yang membentuk lingkungan *cloud*. Mengatur kebijakan alokasi VM
