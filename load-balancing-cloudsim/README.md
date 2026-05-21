@@ -286,8 +286,6 @@ Pada docker compose, ada beberapa docker image yang akan digunakan, berupa:
 Buatlah `docker-compose` dengan isi seperti di bawah ini:
 
 ```yaml
-version: "3"
-
 services:
   app:
     build: ./app
