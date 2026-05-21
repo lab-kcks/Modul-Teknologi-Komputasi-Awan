@@ -158,8 +158,8 @@ import time
 
 MONGO_DETAILS = "mongodb://admin:admin@mongodb:27017/"
 client = pymongo.MongoClient(MONGO_DETAILS)
-db = client['tes']
-collection = db['tes']
+db = client['tes'] # Sesuaikan dengan nama database nantinya
+collection = db['tes'] # Sesuaikan dengan nama collection nantinya
 
 class Item(BaseModel):
     name: str
@@ -381,7 +381,13 @@ Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 }
 ```
 
-> Jangan lupa mengganti nama database dan collection di main.py, kemudian docker-compose up ulang
+Sesuaikan bagian `main.py` di bawah ini sesuai dengan nama databasenya dan collectionnya
+```python
+db = client['tes'] # Ganti'tes' dengan nama database kalian  
+collection = db['tes'] # Ganti'tes' dengan nama collection kalian  
+```
+
+> Kalian juga bisa buat nama database dan collection nya pake `tes` aja juga gapapa, biar gampang 😅
 
 ![all](./img/all.png)
 
