@@ -370,6 +370,8 @@ untuk setup mongodb, maka buka `localhost:8082`, kemudian masukkan username dan 
 Langkah selanjutnya:
 `masukkan nama database baru > Tekan create database > Buka database > masukkan nama koleksi baru > tekan Create collection`
 
+![database-viewing](<img/collection.png>)
+
 Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 
 ```python
@@ -383,8 +385,8 @@ Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 
 Sesuaikan bagian `main.py` di bawah ini sesuai dengan nama databasenya dan collectionnya
 ```python
-db = client['tes'] # Ganti'tes' dengan nama database kalian  
-collection = db['tes'] # Ganti'tes' dengan nama collection kalian  
+db = client['tes'] # Ganti 'tes' dengan nama database kalian  
+collection = db['tes'] # Ganti 'tes' dengan nama collection kalian  
 ```
 
 > Kalian juga bisa buat nama database dan collection nya pake `tes` aja juga gapapa, biar gampang 😅
