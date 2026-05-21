@@ -158,8 +158,8 @@ import time
 
 MONGO_DETAILS = "mongodb://admin:admin@mongodb:27017/"
 client = pymongo.MongoClient(MONGO_DETAILS)
-db = client['tes']
-collection = db['tes']
+db = client['tes'] # Sesuaikan dengan nama database nantinya
+collection = db['tes'] # Sesuaikan dengan nama collection nantinya
 
 class Item(BaseModel):
     name: str
@@ -286,8 +286,6 @@ Pada docker compose, ada beberapa docker image yang akan digunakan, berupa:
 Buatlah `docker-compose` dengan isi seperti di bawah ini:
 
 ```yaml
-version: "3"
-
 services:
   app:
     build: ./app
@@ -372,6 +370,8 @@ untuk setup mongodb, maka buka `localhost:8082`, kemudian masukkan username dan 
 Langkah selanjutnya:
 `masukkan nama database baru > Tekan create database > Buka database > masukkan nama koleksi baru > tekan Create collection`
 
+![database-viewing](<img/collection.png>)
+
 Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 
 ```python
@@ -383,7 +383,13 @@ Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 }
 ```
 
-> Jangan lupa mengganti nama database dan collection di main.py, kemudian docker-compose up ulang
+Sesuaikan bagian `main.py` di bawah ini sesuai dengan nama databasenya dan collectionnya
+```python
+db = client['tes'] # Ganti 'tes' dengan nama database kalian  
+collection = db['tes'] # Ganti 'tes' dengan nama collection kalian  
+```
+
+> Kalian juga bisa buat nama database dan collection nya pake `tes` aja juga gapapa, biar gampang 😅
 
 ![all](./img/all.png)
 
