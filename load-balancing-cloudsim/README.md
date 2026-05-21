@@ -370,7 +370,7 @@ untuk setup mongodb, maka buka `localhost:8082`, kemudian masukkan username dan 
 Langkah selanjutnya:
 `masukkan nama database baru > Tekan create database > Buka database > masukkan nama koleksi baru > tekan Create collection`
 
-![database-viewing](<img/collection.png>)
+![database-viewing](img/collection.png)
 
 Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 
@@ -384,9 +384,10 @@ Pada halaman koleksi, mari buat dokumen baru dengan struktur seperti berikut:
 ```
 
 Sesuaikan bagian `main.py` di bawah ini sesuai dengan nama databasenya dan collectionnya
+
 ```python
-db = client['tes'] # Ganti 'tes' dengan nama database kalian  
-collection = db['tes'] # Ganti 'tes' dengan nama collection kalian  
+db = client['tes'] # Ganti 'tes' dengan nama database kalian
+collection = db['tes'] # Ganti 'tes' dengan nama collection kalian
 ```
 
 > Kalian juga bisa buat nama database dan collection nya pake `tes` aja juga gapapa, biar gampang 😅
@@ -414,9 +415,9 @@ Beberapa komponen yang perlu diinstall (PALING UPDATE):
 
 - STEP 2: [cloudsim-4](https://github.com/cloudslab/cloudsim/releases) -->> [Youtube](https://youtu.be/igJG-qC5nt4?si=4qHfw0JYdWMpvPYS)
 
-3. [common-math 3.6.1](https://archive.apache.org/dist/commons/math/binaries/)
+- [common-math 3.6.1](https://archive.apache.org/dist/commons/math/binaries/)
 
-Video Tutorial menyiapkan tools:
+Video Tutorial menyiapkan tools (Optional):
 
 [![Tutorial](https://img.youtube.com/vi/OZRbkkEuQMI/0.jpg)](https://www.youtube.com/watch?v=OZRbkkEuQMI "Ditonton bagus-bagus yaw")
 
