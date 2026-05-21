@@ -43,7 +43,7 @@ Load balancing sendiri bisa dibagi menjadi 2, yaitu:
     * **Round robin**
         Pembagian menggunakan DNS dalam bentuk rotasi
     * **Weighted round robin**
-        Pembagian berdasarkan beban yang ditentukan. Jika bisa handle traffic besar, makan weight nya makin besar
+        Pembagian berdasarkan beban yang ditentukan. Jika bisa handle traffic besar, maka weight nya makin besar
     * **IP hash**
         Menggunakan fungsi matematika untuk mengubah IP Address ke hash. Berdasarkan hash tersebut, koneksi dihubungkan pada server tersebut
 
@@ -103,10 +103,10 @@ pip install uvicorn
 ```
 
 3. MongoDB
-   Untuk library ini, hanya akan menginstal `pydantic` untuk keperluan input database dan `pymango` untuk mengkoneksikan FastAPI dangan database.
+   Untuk library ini, hanya akan menginstal `pydantic` untuk keperluan input database dan `pymongo` untuk mengkoneksikan FastAPI dangan database.
 
 ```
-pip install pymango pydantic
+pip install pymongo pydantic
 ```
 
 ### 4.1 Menyiapkan Struktur Folder/File
@@ -119,15 +119,18 @@ Silakan mengikuti struktur berikut
     ├── app/
     │   ├── Dockerfile
     │   ├── main.py
-    │   └── requirement.txt
+    │   └── requirements.txt
     ├── app2/
     │   ├── Dockerfile
     │   ├── main.py
-    │   └── requirement.txt
+    │   └── requirements.txt
     ├── app3/
     │   ├── Dockerfile
     │   ├── main.py
-    │   └── requirement.txt
+    │   └── requirements.txt
+    ├── nginx/
+    │   ├── Dockerfile
+    │   └── nginx.conf
     ├── docker-compose.yml
     └── locustfile.py
 ```
@@ -222,11 +225,11 @@ RUN pip install -r requirements.txt
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-Docker akan membuat folder app dan akan menginstall seluruh requirement di dalam file `requirement.txt`. Saat docker diluncurkan, DOcker python akan menjalankan `uvicorn` pada port `8000`, uvicorn akan menjalankan file main dengan aplikasi app (akan dijelakan pada pembuatan FastAPI)
+Docker akan membuat folder app dan akan menginstall seluruh requirement di dalam file `requirement.txt`. Saat docker diluncurkan, Docker python akan menjalankan `uvicorn` pada port `8000`, uvicorn akan menjalankan file main dengan aplikasi app (akan dijelaskan pada pembuatan FastAPI)
 
 ### 4.4 Konfigurasi requirement.txt
 
-silakan memasukkan library-library yang akan digunakan:
+Silakan memasukkan library-library yang akan digunakan:
 
 ```
 fastapi==0.78.0
@@ -246,7 +249,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 ```
 
-dengan file konfigurasi `nginx.conf` sebagai berikut:
+Dengan file konfigurasi `nginx.conf` sebagai berikut:
 
 ```conf
 upstream app {
@@ -265,16 +268,16 @@ server {
 }
 ```
 
-mengingat seluruh app akan dijalankan di docker port **8000** dan nginx akan dijalankan pada host port **80**. `proxy_pass http://app` nama app menyesuaikan nama uvicorn yang dijalankan. Dari upstream yang kita masukkan, load balancer yang akan digunakan adalan **Round-Robin**
+Mengingat seluruh app akan dijalankan di docker port **8000** dan nginx akan dijalankan pada host port **80**. `proxy_pass http://app` nama app menyesuaikan nama uvicorn yang dijalankan. Dari upstream yang kita masukkan, load balancer yang akan digunakan adalan **Round-Robin**
 
 ### 4.6 Konfigurasi docker-compose
 
 Pada docker compose, ada beberapa docker image yang akan digunakan, berupa:
 
 - NGINX
-- Mongo dan Mongo-express
+- Mongo dan Mongo-Express
 
-buatlah `docker-compose` dengan isi seperti di bawah ini:
+Buatlah `docker-compose` dengan isi seperti di bawah ini:
 
 ```yaml
 version: "3"
@@ -335,9 +338,9 @@ volumes:
 ```
 
 
-pada service `app` `app2` `app3`, pastikan arah file sudah menuju folder yang memiliki Dockerfile yang telah dibuat sebelumnya.
+Pada service `app` `app2` `app3`, pastikan arah file sudah menuju folder yang memiliki Dockerfile yang telah dibuat sebelumnya.
 
-adapun host ports yang akan digunakan tiap service adalah **8001** **8002** **8003** dan docker port seluruhnya diarahkan ke **8000**
+Adapun host ports yang akan digunakan tiap service adalah **8001** **8002** **8003** dan docker port seluruhnya diarahkan ke **8000**
 _Why?_ karena kita menjalankan `uvicorn` tiap app di port 8000 namun tiap docker harus dijalankan di port host yang berbeda.
 
 Karena aplikasi akan menghubungkan database, dan databse perlu di load terbih dahulu, maka tambahkan mongodb
@@ -350,7 +353,7 @@ Apabila sudah sesuai, jalankan docker compose dengan
 docker-compose up --build
 ```
 
-Kemudiian buka `localhost` dan coba refresh beberapa kali
+Kemudian buka `localhost` dan coba refresh beberapa kali
 
 ![A](./img/A.png)
 
@@ -423,3 +426,4 @@ Jalankan RoundRobin/RoundRobinScheduler.java
 ![output](./img/output.png)
 
 ---
+
