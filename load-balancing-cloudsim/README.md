@@ -402,17 +402,17 @@ Beberapa algorithm yang akan dibahas pada modul ini:
 
 ### 5.2 Instalasi & Persiapan Tools
 
-Beberapa komponen yang perlu diinstall:
+Beberapa komponen yang perlu diinstall (PALING UPDATE):
 
-1. [Eclipse IDE](https://www.eclipse.org/downloads/packages/release/kepler/sr1/eclipse-ide-java-developers)
-2. [cloudsim-3.0.3](https://github.com/Cloudslab/cloudsim/releases/tag/cloudsim-3.0.3)
+- STEP 1: [Eclipse IDE](https://www.eclipse.org/downloads/packages/) -->> [Youtube](https://youtu.be/Wiz1fj-3egg?si=-DH5aEpgz1xj-Q2S)
+
+- STEP 2: [cloudsim-4](https://github.com/cloudslab/cloudsim/releases) -->> [Youtube](https://youtu.be/igJG-qC5nt4?si=4qHfw0JYdWMpvPYS)
+
 3. [common-math 3.6.1](https://archive.apache.org/dist/commons/math/binaries/)
 
 Video Tutorial menyiapkan tools:
 
 [![Tutorial](https://img.youtube.com/vi/OZRbkkEuQMI/0.jpg)](https://www.youtube.com/watch?v=OZRbkkEuQMI "Ditonton bagus-bagus yaw")
-
-Atau tanya asisten LMAO :joy::joy::joy:
 
 ### 5.3 Menjalankan Simulasi
 
