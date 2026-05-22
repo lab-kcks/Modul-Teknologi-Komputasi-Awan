@@ -423,17 +423,56 @@ Video Tutorial menyiapkan tools (Optional):
 
 ### 5.3 Menjalankan Simulasi
 
-Setelah selesai disiapkan, download repository berikut:
+#### Step 1: Buat Java Project Baru di Eclipse
+
+- Buka Eclipse IDE
+- `File` > `New` > `Java Project`
+- Beri nama project, misalnya **CloudSimScheduling**
+- Klik `Finish`
+
+> ⚠️ Jika Eclipse membuat file `module-info.java`, **hapus file tersebut** (Klik kanan > Delete). File ini membuat project menjadi modular dan akan menyebabkan error karena CloudSim bukan library modular.
+
+#### Step 2: Tambahkan CloudSim JAR ke Build Path
+
+- Klik kanan project **CloudSimScheduling** > `Build Path` > `Configure Build Path`
+- Pilih tab **Libraries**
+- Klik pada **Classpath** (pastikan BUKAN Modulepath!)
+- Klik `Add External JARs...`
+- Browse ke folder `jars/` di dalam folder CloudSim yang telah di-extract, lalu pilih **`cloudsim-4.0.jar`**
+- Tambahkan juga **`commons-math3-3.6.1.jar`** yang telah didownload sebelumnya
+- Klik `Apply and Close`
+
+Hasil akhir Build Path seharusnya terlihat seperti ini:
+
+```
+📦 Modulepath
+  └── JRE System Library [JavaSE-21]
+📦 Classpath
+  └── cloudsim-4.0.jar
+  └── commons-math3-3.6.1.jar
+```
+
+#### Step 3: Download Repository Task Scheduling
+
+Download repository berikut sebagai ZIP, lalu extract:
 https://github.com/michaelfahmy/cloudsim-task-scheduling/tree/master
 
-Masukkan isi folder src ke dalam folder example.
-Lalu refresh
+#### Step 4: Copy Source Code ke Project Eclipse
+
+- Dari folder hasil extract, buka folder `src/`
+- Di dalamnya terdapat beberapa package: `FCFS`, `mySch`, `PSO`, `RoundRobin`, `SJF`, `utils`
+- **Copy semua folder/package tersebut** ke dalam folder `src/` project **CloudSimScheduling** di Eclipse
+- Bisa juga dengan cara drag & drop ke `src` di Package Explorer Eclipse
+
+#### Step 5: Refresh & Jalankan
+
+- Klik kanan project > **Refresh** (atau tekan `F5`)
+- Package-package baru akan muncul di Package Explorer
 
 ![folder](./img/folder.png)
 
-Jalankan RoundRobin/RoundRobinScheduler.java
-
-> Klik Kanan > Run As > Java Apllication
+- Buka `RoundRobin` > `RoundRobinScheduler.java`
+- Klik Kanan > `Run As` > `Java Application`
 
 ![output](./img/output.png)
 
